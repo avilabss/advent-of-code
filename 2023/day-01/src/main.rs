@@ -24,34 +24,19 @@ fn convert_to_digits(puzzle_line: &str) -> String {
     parsed_string
 }
 
-fn solve_part_1(puzzle_lines: Split<'_, char>) -> u32 {
+fn solve(puzzle_lines: Split<'_, char>, patch_word_digits: bool) -> u32 {
     let mut total_sum = 0;
 
     for line in puzzle_lines {
-        let digits = get_digits(line);
-        let digits_length = digits.len();
+        let use_line;
 
-        if digits_length == 0 {
-            continue;
+        if patch_word_digits {
+            use_line = convert_to_digits(line);
+        } else {
+            use_line = line.to_string();
         }
 
-        let first_digit = digits[0];
-        let last_digit = digits[digits_length - 1];
-        let joinned_digit_str = format!("{first_digit}{last_digit}");
-        let joinned_digit = joinned_digit_str.parse::<u32>().unwrap();
-
-        total_sum += joinned_digit;
-    }
-
-    total_sum
-}
-
-fn solve_part_2(puzzle_lines: Split<'_, char>) -> u32 {
-    let mut total_sum = 0;
-
-    for line in puzzle_lines {
-        let patched_line = convert_to_digits(line);
-        let digits = get_digits(patched_line.as_str());
+        let digits = get_digits(use_line.as_str());
         let digits_length = digits.len();
 
         if digits_length == 0 {
@@ -77,8 +62,8 @@ fn main() {
         let puzzle_input = fs::read_to_string(puzzle_input_path).unwrap();
         let puzzle_lines = puzzle_input.split('\n');
 
-        let solution_part_1 = solve_part_1(puzzle_lines.clone());
-        let solution_part_2 = solve_part_2(puzzle_lines);
+        let solution_part_1 = solve(puzzle_lines.clone(), false);
+        let solution_part_2 = solve(puzzle_lines, true);
 
         println!("Part-1 Solution: {solution_part_1}");
         println!("Part-2 Solution: {solution_part_2}");
