@@ -6,7 +6,7 @@ fn parse_cube_count(color_part: &str, replace: &str) -> u32 {
     cube_count
 }
 
-fn solve(puzzle_lines: Split<'_, &str>) -> u32 {
+fn solve_1(puzzle_lines: Split<'_, &str>) -> u32 {
     let mut game_ids: Vec<u32> = vec![];
     let max_red_cubes = 12;
     let max_green_cubes = 13;
@@ -54,6 +54,52 @@ fn solve(puzzle_lines: Split<'_, &str>) -> u32 {
     game_ids.iter().sum()
 }
 
+fn solve_2(puzzle_lines: Split<'_, &str>) -> u32 {
+    let mut powers: Vec<u32> = vec![];
+
+    for line in puzzle_lines {
+        let mut line_parts = line.split(":");
+        let _ = line_parts.next().unwrap();
+        let game_sets = line_parts.next().unwrap().split(";");
+
+        let mut biggest_red_cube_this_game = 0;
+        let mut biggest_green_cube_this_game = 0;
+        let mut biggest_blue_cube_this_game = 0;
+
+        for game_set in game_sets {
+            let color_parts = game_set.split(",");
+
+            for color_part in color_parts {
+                if color_part.contains("red") {
+                    let cube_count = parse_cube_count(color_part, "red");
+
+                    if cube_count > biggest_red_cube_this_game {
+                        biggest_red_cube_this_game = cube_count;
+                    }
+                } else if color_part.contains("green") {
+                    let cube_count = parse_cube_count(color_part, "green");
+
+                    if cube_count > biggest_green_cube_this_game {
+                        biggest_green_cube_this_game = cube_count;
+                    }
+                } else if color_part.contains("blue") {
+                    let cube_count = parse_cube_count(color_part, "blue");
+
+                    if cube_count > biggest_blue_cube_this_game {
+                        biggest_blue_cube_this_game = cube_count;
+                    }
+                }
+            }
+        }
+
+        powers.push(
+            biggest_red_cube_this_game * biggest_green_cube_this_game * biggest_blue_cube_this_game,
+        );
+    }
+
+    powers.iter().sum()
+}
+
 fn main() {
     let mut cwd_path_buff = env::current_dir().unwrap();
     cwd_path_buff.push("puzzle_input.txt");
@@ -62,8 +108,10 @@ fn main() {
         let puzzle_input = fs::read_to_string(puzzle_input_path).unwrap();
         let puzzle_lines = puzzle_input.split("\n");
 
-        let solution = solve(puzzle_lines);
+        let solution_1 = solve_1(puzzle_lines.clone());
+        let solution_2 = solve_2(puzzle_lines);
 
-        println!("Solution: {}", solution);
+        println!("Solution 1: {}", solution_1);
+        println!("Solution 2: {}", solution_2);
     }
 }
